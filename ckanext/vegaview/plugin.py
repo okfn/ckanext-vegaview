@@ -1,4 +1,5 @@
 import logging
+
 import ckan.plugins as p
 
 log = logging.getLogger(__name__)
@@ -24,10 +25,22 @@ class VegaView(p.SingletonPlugin):
                 'iframed': False}
 
     def can_view(self, data_dict):
-        return True
+        return data_dict['resource'].get('datastore_active', False)
+
+    def setup_template_variables(self, context, data_dict):
+        vega_specification = data_dict['resource_view'].get('vega_specification', {})
+        data = _get_records_from_datastore(data_dict['resource'])
+        return {'vega_specification': vega_specification,
+                'data': data}
 
     def view_template(self, context, data_dict):
         return 'vega_view.html'
 
     def form_template(self, context, data_dict):
         return 'vega_form.html'
+
+
+def _get_records_from_datastore(resource):
+    data = {'resource_id': resource['id'], 'limit': 100000}
+    records = p.toolkit.get_action('datastore_search')({}, data)['records']
+    return records
