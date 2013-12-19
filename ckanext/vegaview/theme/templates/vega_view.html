@@ -1,0 +1,15 @@
+{% resource 'vegaview/main' %}
+
+<script type="text/javascript">
+  function parse(spec) {
+    vg.parse.spec(spec, function(chart) {
+        chart({el: "#vis"}).update();
+    });
+  }
+  window.onload = function () {
+    var spec = {{ resource_view.get('vega_specification') | safe }};
+    parse(spec);
+  };
+</script>
+
+<div id="vis"></div>

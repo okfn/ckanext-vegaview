@@ -1,0 +1,11 @@
+{% import 'macros/form.html' as form %}
+
+{% call form.textarea('vega_specification', id='field-vega_specification',
+        label=_('Specification'), value=data.vega_specification,
+        error=errors.vega_specification, classes=['editor'], is_required=true) %}
+  <span class="editor-info-block">
+    {% trans %}
+      Visit <a href="https://github.com/trifacta/vega/wiki/Documentation" target="_blank">Vega's documentation</a> to understand the formatting
+    {% endtrans %}
+  </span>
+{% endcall %}
