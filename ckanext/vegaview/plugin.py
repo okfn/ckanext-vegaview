@@ -4,6 +4,7 @@ import ckan.plugins as p
 
 log = logging.getLogger(__name__)
 not_empty = p.toolkit.get_validator('not_empty')
+ignore_empty = p.toolkit.get_validator('ignore_empty')
 
 
 class VegaView(p.SingletonPlugin):
@@ -18,10 +19,16 @@ class VegaView(p.SingletonPlugin):
         p.toolkit.add_resource('theme/public', 'vegaview')
 
     def info(self):
+        schema = {
+            'vega_specification': [not_empty, unicode],
+            'limit': [ignore_empty, int],
+            'offset': [ignore_empty, int]
+        }
+
         return {'name': 'vega',
                 'title': 'Vega',
                 'icon': 'bar-chart',
-                'schema': {'vega_specification': [not_empty, unicode]},
+                'schema': schema,
                 'iframed': False}
 
     def can_view(self, data_dict):
@@ -29,7 +36,9 @@ class VegaView(p.SingletonPlugin):
 
     def setup_template_variables(self, context, data_dict):
         vega_specification = data_dict['resource_view'].get('vega_specification', {})
-        data = _get_records_from_datastore(data_dict['resource'])
+        limit = data_dict['resource_view'].get('limit')
+        offset = data_dict['resource_view'].get('offset')
+        data = _get_records_from_datastore(data_dict['resource'], limit, offset)
         return {'vega_specification': vega_specification,
                 'data': data}
 
@@ -40,7 +49,7 @@ class VegaView(p.SingletonPlugin):
         return 'vega_form.html'
 
 
-def _get_records_from_datastore(resource):
-    data = {'resource_id': resource['id'], 'limit': 100000}
+def _get_records_from_datastore(resource, limit, offset):
+    data = {'resource_id': resource['id'], 'limit': limit, 'offset': offset}
     records = p.toolkit.get_action('datastore_search')({}, data)['records']
     return records
