@@ -91,28 +91,22 @@ class TestVegaView(object):
 
     @mock.patch('ckan.plugins.toolkit.get_action')
     def test_setup_template_variables_adds_vega_specification(self, _):
-        context = {}
         vega_specification = 'the vega specification'
-        data_dict = {
-            'resource': { 'id': 'resource id' },
-            'resource_view': { 'vega_specification': vega_specification }
-        }
-        template_variables = self.plugin.setup_template_variables(context,
-                                                                  data_dict)
+        resource_id = 'id'
+        resource_view = { 'vega_specification': vega_specification }
+
+        template_variables = self._setup_template_variables(resource_id,
+                                                            resource_view)
+
         assert template_variables.get('vega_specification') is not None
         assert template_variables['vega_specification'] == vega_specification
 
     @mock.patch('ckan.plugins.toolkit.get_action')
     def test_setup_template_variables_adds_data_from_the_datastore(self, get_action):
-        context = {}
         records = ['the', 'records']
         get_action.return_value.return_value = { 'records': records }
-        data_dict = {
-            'resource': { 'id': 'resource id' },
-            'resource_view': {}
-        }
-        template_variables = self.plugin.setup_template_variables(context,
-                                                                  data_dict)
+
+        template_variables = self._setup_template_variables()
 
         assert template_variables.get('records') is not None
         assert template_variables['records'] == records,\
@@ -120,16 +114,13 @@ class TestVegaView(object):
 
     @mock.patch('ckan.plugins.toolkit.get_action')
     def test_setup_template_variables_calls_datastore_correctly(self, get_action):
-        resource_id = 'resource id'
         limit = 51
         offset = 42
-        context = {}
-        data_dict = {
-            'resource': { 'id': resource_id },
-            'resource_view': { 'limit': limit, 'offset': offset }
-        }
-        template_variables = self.plugin.setup_template_variables(context,
-                                                                  data_dict)
+        resource_id = 'id'
+        resource_view = { 'limit': limit, 'offset': offset }
+
+        self._setup_template_variables(resource_id, resource_view)
+
         get_action.assert_called_with('datastore_search')
         call_args_data = get_action().call_args[0][1]
         assert call_args_data['resource_id'] == resource_id,\
@@ -139,16 +130,20 @@ class TestVegaView(object):
 
     @mock.patch('ckan.plugins.toolkit.get_action')
     def test_setup_template_variables_doesnt_use_limit_or_offset_if_theyre_none(self, get_action):
-        limit = None
-        offset = None
-        context = {}
-        data_dict = {
-            'resource': { 'id': 'resource id' },
-            'resource_view': { 'limit': limit, 'offset': offset }
-        }
-        template_variables = self.plugin.setup_template_variables(context,
-                                                                  data_dict)
+        resource_id = 'id'
+        resource_view = { 'limit': None, 'offset': None }
+
+        self._setup_template_variables(resource_id, resource_view)
+
         get_action.assert_called_with('datastore_search')
         call_args_data = get_action().call_args[0][1]
         assert 'limit' not in call_args_data, call_args_data['limit']
         assert 'offset' not in call_args_data, call_args_data['offset']
+
+    def _setup_template_variables(self, resource_id='id', resource_view={}):
+        context = {}
+        data_dict = {
+            'resource': { 'id': resource_id },
+            'resource_view': resource_view
+        }
+        return self.plugin.setup_template_variables(context, data_dict)
