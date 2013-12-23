@@ -7,7 +7,7 @@
     });
   }
   window.onload = function () {
-    var data = {{ h.dump_json(data) | safe }};
+    var data = {{ h.dump_json(records) | safe }};
     var spec = {{ vega_specification | safe }};
     parse(spec);
   };

@@ -38,9 +38,9 @@ class VegaView(p.SingletonPlugin):
         vega_specification = data_dict['resource_view'].get('vega_specification', {})
         limit = data_dict['resource_view'].get('limit')
         offset = data_dict['resource_view'].get('offset')
-        data = _get_records_from_datastore(data_dict['resource'], limit, offset)
+        records = _get_records_from_datastore(data_dict['resource'], limit, offset)
         return {'vega_specification': vega_specification,
-                'data': data}
+                'records': records}
 
     def view_template(self, context, data_dict):
         return 'vega_view.html'

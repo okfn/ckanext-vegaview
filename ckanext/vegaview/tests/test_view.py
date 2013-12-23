@@ -101,8 +101,8 @@ class TestVegaView(object):
     @mock.patch('ckan.plugins.toolkit.get_action')
     def test_setup_template_variables_adds_data_from_the_datastore(self, get_action):
         context = {}
-        data = ['the', 'records']
-        get_action.return_value.return_value = { 'records': data }
+        records = ['the', 'records']
+        get_action.return_value.return_value = { 'records': records }
         data_dict = {
             'resource': { 'id': 'resource id' },
             'resource_view': {}
@@ -110,8 +110,9 @@ class TestVegaView(object):
         template_variables = self.plugin.setup_template_variables(context,
                                                                   data_dict)
 
-        assert template_variables.get('data') is not None
-        assert template_variables['data'] == data, template_variables['data']
+        assert template_variables.get('records') is not None
+        assert template_variables['records'] == records,\
+                template_variables['records']
 
     @mock.patch('ckan.plugins.toolkit.get_action')
     def test_setup_template_variables_calls_datastore_correctly(self, get_action):
