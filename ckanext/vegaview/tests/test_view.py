@@ -136,3 +136,19 @@ class TestVegaView(object):
                call_args_data['resource_id']
         assert call_args_data['limit'] == limit, call_args_data['limit']
         assert call_args_data['offset'] == offset, call_args_data['offset']
+
+    @mock.patch('ckan.plugins.toolkit.get_action')
+    def test_setup_template_variables_doesnt_use_limit_or_offset_if_theyre_none(self, get_action):
+        limit = None
+        offset = None
+        context = {}
+        data_dict = {
+            'resource': { 'id': 'resource id' },
+            'resource_view': { 'limit': limit, 'offset': offset }
+        }
+        template_variables = self.plugin.setup_template_variables(context,
+                                                                  data_dict)
+        get_action.assert_called_with('datastore_search')
+        call_args_data = get_action().call_args[0][1]
+        assert 'limit' not in call_args_data, call_args_data['limit']
+        assert 'offset' not in call_args_data, call_args_data['offset']

@@ -51,6 +51,10 @@ class VegaView(p.SingletonPlugin):
 
 
 def _get_records_from_datastore(resource, limit, offset):
-    data = {'resource_id': resource['id'], 'limit': limit, 'offset': offset}
+    data = {'resource_id': resource['id']}
+    if limit:
+        data['limit'] = limit
+    if offset:
+        data['offset'] = offset
     records = p.toolkit.get_action('datastore_search')({}, data)['records']
     return records
