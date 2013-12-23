@@ -5,6 +5,7 @@ import ckan.plugins as p
 log = logging.getLogger(__name__)
 not_empty = p.toolkit.get_validator('not_empty')
 ignore_empty = p.toolkit.get_validator('ignore_empty')
+natural_number_validator = p.toolkit.get_validator('natural_number_validator')
 
 
 class VegaView(p.SingletonPlugin):
@@ -21,8 +22,8 @@ class VegaView(p.SingletonPlugin):
     def info(self):
         schema = {
             'vega_specification': [not_empty, unicode],
-            'limit': [ignore_empty, int],
-            'offset': [ignore_empty, int]
+            'limit': [ignore_empty, natural_number_validator],
+            'offset': [ignore_empty, natural_number_validator]
         }
 
         return {'name': 'vega',

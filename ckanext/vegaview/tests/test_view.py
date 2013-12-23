@@ -60,7 +60,9 @@ class TestVegaView(object):
 
     def test_schema_limit_converts_to_int(self):
         schema = self.plugin.info()['schema']
-        assert int in schema['limit'], '"limit" should converts to int'
+        natural_number_validator = p.toolkit.get_validator('natural_number_validator')
+        assert natural_number_validator in schema['limit'],\
+                '"limit" should validate a natural number'
 
     def test_schema_has_offset(self):
         schema = self.plugin.info()['schema']
@@ -73,7 +75,9 @@ class TestVegaView(object):
 
     def test_schema_offset_converts_to_int(self):
         schema = self.plugin.info()['schema']
-        assert int in schema['offset'], '"offset" should converts to int'
+        natural_number_validator = p.toolkit.get_validator('natural_number_validator')
+        assert natural_number_validator in schema['offset'],\
+                '"offset" should validate a natural number'
 
     def test_can_view_only_if_datastore_is_active(self):
         active_datastore_data_dict = {
